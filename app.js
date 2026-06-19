@@ -79,6 +79,26 @@ const WORK_DECO = [
   { type: 'bookshelf',    x: TILE*13, y: TILE*1  },
 ];
 
+/* Tanaman pot di baris bawah WORK zone (row 14-15), MENIRU lounge bottom (cactus + large-plant) */
+const WORK_BOTTOM_PLANTS = [
+  { x: TILE*0,  y: TILE*14 },      // pojok kiri-bawah
+  { x: TILE*3,  y: TILE*14 },      // kiri-tengah bawah
+  { x: TILE*5,  y: TILE*14 },      // antara dispenser dan tennis
+  { x: TILE*13, y: TILE*14 },      // kanan bawah (samping tennis)
+  { x: TILE*15, y: TILE*14 },      // pojok kanan-bawah
+];
+
+/* Chess board di lounge — kanan-bawah area kosong (lounge-rel cols 12-13, rows 9-10),
+   tidak menimpa coffee-table (11-12, 7-8) atau bookshelf (13-14, 11). */
+const CHESS_BOARD = { x: TILE*12 - 100, y: TILE*9, w: TILE*2, h: TILE*2 };
+
+/* Frame foto presiden + wakil presiden Indonesia di dinding atas WORK zone.
+   Pakai cols 8-11 row 0 (di antara plant top-tengah dan dispenser). */
+const PRESIDENT_FRAMES = [
+  { label: 'Presiden', x: TILE*8.5,  y: TILE*0.2, skin: '#a8714a' },   // kulit lebih gelap
+  { label: 'Wapres',   x: TILE*10,   y: TILE*0.2, skin: '#e0b48c' },   // kulit lebih terang
+];
+
 /* Work zone plants — JANGAN dekat walkway (yang ada di cols 8-12 rows 13-14).
    Pojok-pojok saja supaya tidak ganggu visual jalan lewat. */
 const WORK_PLANTS = [
@@ -225,6 +245,76 @@ function renderWorkDeco() {
   return WORK_DECO.map(it =>
     `<div class="lounge-item ${it.type}" style="left:${it.x}px; top:${it.y}px;"></div>`
   ).join('');
+}
+
+function renderWorkBottomPlants() {
+  return WORK_BOTTOM_PLANTS.map(p =>
+    `<div class="work-plant" style="left:${p.x}px; top:${p.y}px;"></div>`
+  ).join('');
+}
+
+function renderChessBoard() {
+  const cells = [];
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const fill = (r + c) % 2 ? '#3a2410' : '#e6d4a8';
+      cells.push(`<rect x="${c*10}" y="${r*10}" width="10" height="10" fill="${fill}"/>`);
+    }
+  }
+  return `<div class="chess-board" style="left:${CHESS_BOARD.x}px; top:${CHESS_BOARD.y}px;
+            width:${CHESS_BOARD.w}px; height:${CHESS_BOARD.h}px;">
+    <svg viewBox="-4 -4 88 88" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+      <!-- Frame kayu -->
+      <rect x="-4" y="-4" width="88" height="88" fill="#5a3a18"/>
+      <rect x="-2" y="-2" width="84" height="84" fill="#3a2410"/>
+      <!-- 8x8 board -->
+      ${cells.join('')}
+      <!-- Beberapa bidak (putih + hitam) -->
+      <circle cx="5" cy="5" r="3" fill="#1a1010"/>      <!-- bidak hitam top-left -->
+      <circle cx="75" cy="5" r="3" fill="#1a1010"/>     <!-- top-right -->
+      <circle cx="15" cy="15" r="3" fill="#1a1010"/>
+      <circle cx="65" cy="65" r="3.5" fill="#fafafa"/>  <!-- bidak putih bottom-right -->
+      <circle cx="5" cy="75" r="3" fill="#fafafa"/>     <!-- bottom-left -->
+      <circle cx="25" cy="55" r="3" fill="#fafafa"/>
+      <circle cx="55" cy="25" r="3" fill="#1a1010"/>
+      <!-- Highlight piece (king) -->
+      <rect x="35" y="35" width="6" height="6" fill="#fafafa" stroke="#1a1010" stroke-width="1"/>
+    </svg>
+  </div>`;
+}
+
+function renderPresidents() {
+  // Setelan + dasi seragam: jas hitam, dasi merah. Bedakan hanya warna kulit + label jabatan.
+  const SUIT = '#0d0d0d';
+  const HAIR = '#0a0a0a';
+  const TIE  = '#c8302a';
+  return PRESIDENT_FRAMES.map(p => {
+    return `<div class="prez-frame" style="left:${p.x}px; top:${p.y}px;">
+      <div class="prez-photo">
+        <svg viewBox="0 0 32 36" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%; display:block; image-rendering:pixelated;">
+          <rect x="0" y="0" width="32" height="36" fill="#d4dceb"/>
+          <rect x="6" y="24" width="20" height="12" fill="${SUIT}"/>
+          <polygon points="14,24 16,30 18,24" fill="#fafafa"/>
+          <polygon points="15,28 17,28 16,33" fill="${TIE}"/>
+          <rect x="13" y="22" width="6" height="3" fill="${p.skin}"/>
+          <rect x="10" y="10" width="12" height="14" fill="${p.skin}"/>
+          <rect x="8"  y="14" width="2" height="3" fill="${p.skin}"/>
+          <rect x="22" y="14" width="2" height="3" fill="${p.skin}"/>
+          <rect x="9"  y="7"  width="14" height="6" fill="${HAIR}"/>
+          <rect x="9"  y="6"  width="14" height="2" fill="${HAIR}"/>
+          <rect x="8"  y="9"  width="2"  height="4" fill="${HAIR}"/>
+          <rect x="22" y="9"  width="2"  height="4" fill="${HAIR}"/>
+          <rect x="11" y="13" width="3" height="1" fill="${HAIR}"/>
+          <rect x="18" y="13" width="3" height="1" fill="${HAIR}"/>
+          <rect x="12" y="15" width="2" height="2" fill="#1a1010"/>
+          <rect x="18" y="15" width="2" height="2" fill="#1a1010"/>
+          <rect x="15" y="17" width="2" height="2" fill="#a87c5a"/>
+          <rect x="13" y="20" width="6" height="1" fill="#7a3a2a"/>
+        </svg>
+      </div>
+      <div class="prez-label">${p.label}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderDispenser() {
@@ -401,11 +491,14 @@ function renderStaticOnce() {
     renderTennis() +
     renderDispenser() +
     renderWorkPlants() +
-    renderWorkDeco();
+    renderWorkBottomPlants() +
+    renderWorkDeco() +
+    renderPresidents();
   const zoneLounge = document.getElementById('zone-lounge');
   zoneLounge.innerHTML =
     '<span class="zone-label">LOUNGE</span>' +
     renderLoungeDecorations() +
+    renderChessBoard() +
     renderTVShell();
   // Compute walkable grid + start movement tick (sekali jalan)
   walkableGrid = buildWalkableGrid();
@@ -635,6 +728,11 @@ function buildWalkableGrid() {
     markObstacleTile(grid,
       Math.round(p.x / TILE), Math.round(p.y / TILE), 1, 2);
   }
+  // Work bottom plants (row 14-15)
+  for (const p of WORK_BOTTOM_PLANTS) {
+    markObstacleTile(grid,
+      Math.round(p.x / TILE), Math.round(p.y / TILE), 1, 2);
+  }
 
   // Work zone deco (bookshelf di pojok kanan-atas, etc.)
   for (const it of WORK_DECO) {
@@ -642,6 +740,19 @@ function buildWalkableGrid() {
     markObstacleTile(grid,
       Math.round(it.x / TILE), Math.round(it.y / TILE), dims.w, dims.h);
   }
+
+  // President frames di wall row 0-1 (1.5 tile wide, 2 tile tall)
+  for (const p of PRESIDENT_FRAMES) {
+    markObstacleTile(grid,
+      Math.round(p.x / TILE), Math.round(p.y / TILE), 2, 2);
+  }
+
+  // Chess board di lounge (offset col 16)
+  markObstacleTile(grid,
+    16 + Math.round(CHESS_BOARD.x / TILE),
+    Math.round(CHESS_BOARD.y / TILE),
+    Math.round(CHESS_BOARD.w / TILE),
+    Math.round(CHESS_BOARD.h / TILE));
 
   // Lounge decorations (positions relative to lounge container, offset col 16)
   const LOUNGE_OFFSET = 16;

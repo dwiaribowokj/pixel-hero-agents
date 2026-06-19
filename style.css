@@ -440,6 +440,48 @@ html, body {
   z-index: 4;
 }
 
+/* Chess board (papan catur kayu) di lounge */
+.chess-board {
+  position: absolute;
+  z-index: 4;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.5));
+  image-rendering: pixelated;
+}
+
+/* President + Vice President pixel-art portraits di dinding WORK zone */
+.prez-frame {
+  position: absolute;
+  width: calc(var(--tile) * 1.2);
+  height: calc(var(--tile) * 1.6);
+  background: #fafafa;
+  border: 2px solid #1a1530;
+  box-shadow:
+    inset 0 0 0 1px #d4c89a,
+    2px 3px 0 rgba(0,0,0,0.5);
+  z-index: 5;
+  padding: 2px 2px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  image-rendering: pixelated;
+}
+.prez-photo {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #d4dceb;
+  border: 1px solid #4a3a6d;
+}
+.prez-label {
+  font-size: 5px;
+  color: #1a1530;
+  text-align: center;
+  line-height: 1;
+  padding-top: 2px;
+  letter-spacing: 0.3px;
+  font-weight: bold;
+}
+
 /* === STATION (parent agent desk) === */
 .desks {
   position: absolute;
