@@ -1,0 +1,701 @@
+/* === Pixel Office — Two-zone (Work + Lounge) === */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --bg-grad-top: #3a4a68;
+  --bg-grad-bot: #2a3548;
+  --text: #fff5d6;
+  --text-dim: #c8b8f0;
+  --green: #6dde6d;
+  --yellow: #f5d76e;
+  --orange: #ff9a4a;
+  --pink: #ff7ec8;
+  --tile: 48px;        /* native 16 × scale 3 */
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -webkit-font-smoothing: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, var(--bg-grad-top), var(--bg-grad-bot));
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#scanline {
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, rgba(0,0,0,0.18) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: rgba(20, 14, 45, 0.85);
+  border-bottom: 4px solid #5a3e8c;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  z-index: 10;
+}
+.title-box { display: flex; align-items: center; gap: 12px; }
+.title-box h1 { margin: 0; font-size: 13px; letter-spacing: 1px; }
+.by-line { font-size: 8px; color: var(--text-dim); margin-top: 4px; }
+.by-line a { color: var(--orange); text-decoration: none; }
+.by-line a:hover { text-decoration: underline; }
+.pixel-icon { font-size: 24px; }
+.stats { display: flex; gap: 14px; font-size: 9px; flex-wrap: wrap; }
+.stat {
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid #5a3e8c;
+  color: var(--text-dim);
+}
+.stat b { color: var(--text); margin-right: 4px; }
+.stat.active b { color: var(--green); }
+.stat.recent b { color: var(--yellow); }
+
+/* === ROOM (30×16 tiles = 1440×768) === */
+.room {
+  padding: 24px 16px 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.room-inner {
+  position: relative;
+  width: 1440px;
+  height: 768px;
+  background: #2c2440;     /* outer paddings/walls dark */
+  border: 6px solid #2c2440;
+  box-shadow:
+    inset 0 0 0 3px #4a3a6d,
+    0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* === ZONE A: WORK (left, 16 tiles wide) === */
+.zone-work {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--tile) * 16);    /* 768 */
+  height: 100%;
+  background: url('assets/floors/floor_0.png') repeat;
+  background-size: var(--tile) var(--tile);
+}
+
+/* Top wall in work zone (1 tile strip) */
+.zone-work::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--tile);
+  background: url('assets/walls/wall_0.png') repeat-x;
+  background-size: calc(var(--tile)*4) calc(var(--tile)*8);
+  background-position: 0 calc(var(--tile)*-1);  /* show bottom of wall tile */
+}
+
+/* === ZONE B: LOUNGE (right) — lantai ubin PUTIH === */
+.zone-lounge {
+  position: absolute;
+  left: calc(var(--tile) * 16);
+  top: 0;
+  width: calc(var(--tile) * 14);    /* 672 */
+  height: 100%;
+  /* Custom white tile: warna dasar putih + grid grey halus + tepi tile sedikit gelap */
+  background:
+    /* shadow tepi tile */
+    repeating-linear-gradient(0deg,
+      transparent 0 var(--tile),
+      rgba(180, 195, 210, 0.45) var(--tile) calc(var(--tile) + 2px)),
+    repeating-linear-gradient(90deg,
+      transparent 0 var(--tile),
+      rgba(180, 195, 210, 0.45) var(--tile) calc(var(--tile) + 2px)),
+    /* tile shading checkboard */
+    repeating-linear-gradient(45deg,
+      #fafafa 0 24px,
+      #f0f0f0 24px 48px),
+    #fafafa;
+}
+
+.zone-lounge::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--tile);
+  background: url('assets/walls/wall_0.png') repeat-x;
+  background-size: calc(var(--tile)*4) calc(var(--tile)*8);
+  background-position: 0 calc(var(--tile)*-1);
+}
+
+/* === DIVIDER WALL antar zona === */
+.divider {
+  position: absolute;
+  left: calc(var(--tile) * 16 - 6px);
+  top: 0;
+  width: 12px;
+  height: 100%;
+  background: #2c2440;
+  border-left: 2px solid #4a3a6d;
+  border-right: 2px solid #4a3a6d;
+  z-index: 3;
+}
+.divider::after {     /* "pintu" lewat antar zona */
+  content: "";
+  position: absolute;
+  top: calc(var(--tile) * 8 - 12px);
+  width: 8px;
+  height: calc(var(--tile) * 2);
+  background: linear-gradient(180deg, #6dde6d 0 50%, #356d47 50% 100%);
+  left: 2px;
+}
+
+/* === LOUNGE furniture (static decorations) === */
+.lounge-item {
+  position: absolute;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  z-index: 4;
+}
+.lounge-item.sofa-front {
+  width: calc(var(--tile)*2); height: var(--tile);
+  background-image: url('assets/furniture/SOFA/SOFA_FRONT.png');
+}
+.lounge-item.sofa-side {
+  width: var(--tile); height: calc(var(--tile)*2);
+  background-image: url('assets/furniture/SOFA/SOFA_SIDE.png');
+}
+.lounge-item.coffee-table {
+  width: calc(var(--tile)*2); height: calc(var(--tile)*2);
+  background-image: url('assets/furniture/COFFEE_TABLE/COFFEE_TABLE.png');
+}
+.lounge-item.bookshelf {
+  width: calc(var(--tile)*2); height: var(--tile);
+  background-image: url('assets/furniture/BOOKSHELF/BOOKSHELF.png');
+}
+.lounge-item.large-plant {
+  width: calc(var(--tile)*2); height: calc(var(--tile)*3);
+  background-image: url('assets/furniture/LARGE_PLANT/LARGE_PLANT.png');
+}
+.lounge-item.cactus {
+  width: var(--tile); height: calc(var(--tile)*2);
+  background-image: url('assets/furniture/CACTUS/CACTUS.png');
+}
+.lounge-item.painting {
+  width: var(--tile); height: calc(var(--tile)*2);
+  background-image: url('assets/furniture/SMALL_PAINTING/SMALL_PAINTING.png');
+}
+.lounge-item.clock {
+  width: var(--tile); height: calc(var(--tile)*2);
+  background-image: url('assets/furniture/CLOCK/CLOCK.png');
+}
+
+/* Work zone decorations (plants) */
+.work-plant {
+  position: absolute;
+  width: var(--tile);
+  height: calc(var(--tile)*2);
+  background: url('assets/furniture/PLANT/PLANT.png') no-repeat;
+  background-size: 100% 100%;
+  z-index: 4;
+}
+
+/* === STATION (parent agent desk) === */
+.desks {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.desks > * { pointer-events: auto; }
+
+.station {
+  position: absolute;
+  width: calc(var(--tile) * 3);
+  height: calc(var(--tile) * 4);
+  z-index: 5;
+}
+
+.desk-front {
+  position: absolute;
+  left: 0;
+  top: var(--tile);
+  width: calc(var(--tile) * 3.4);   /* sedikit lebih panjang ke kanan */
+  height: calc(var(--tile) * 2);
+  background: url('assets/furniture/DESK/DESK_FRONT.png') no-repeat;
+  background-size: 100% 100%;
+  z-index: 2;
+}
+
+.pc {
+  position: absolute;
+  left: calc(var(--tile) * 2.4);   /* sudut kanan, ngikuti perpanjangan meja */
+  top: calc(var(--tile) * 1.1);    /* turun lagi, monitor full sit di atas desk */
+  width: var(--tile);
+  height: calc(var(--tile) * 2);
+  background: url('assets/furniture/PC/PC_FRONT_OFF.png') no-repeat;
+  background-size: 100% 100%;
+  z-index: 4;
+}
+/* PC animation: satu rule untuk awake + hard supaya tidak restart saat
+   expression berganti. Hard state pakai glow filter, animasi tetap sama. */
+.station.expression-awake .pc,
+.station.expression-hard .pc {
+  animation: pc-anim 0.6s steps(1) infinite;
+}
+.station.expression-hard .pc {
+  /* indicator "sibuk": glow hijau + brightness lebih tinggi */
+  filter: brightness(1.15) drop-shadow(0 0 4px rgba(108, 222, 109, 0.7));
+}
+.station.expression-sleeping .pc {
+  background-image: url('assets/furniture/PC/PC_FRONT_OFF.png');
+}
+@keyframes pc-anim {
+  0%, 32.99%   { background-image: url('assets/furniture/PC/PC_FRONT_ON_1.png'); }
+  33%, 65.99%  { background-image: url('assets/furniture/PC/PC_FRONT_ON_2.png'); }
+  66%, 100%    { background-image: url('assets/furniture/PC/PC_FRONT_ON_3.png'); }
+}
+
+.chair {
+  position: absolute;
+  left: var(--tile);
+  top: calc(var(--tile) * 3);
+  width: var(--tile);
+  height: calc(var(--tile) * 2);
+  background: url('assets/furniture/WOODEN_CHAIR/WOODEN_CHAIR_BACK.png') no-repeat;
+  background-size: 100% 100%;
+  z-index: 1;
+}
+
+/* WORKER — overlay di samping kiri meja. Avatar dekat meja tapi tidak nutup PC.
+   z-index 3 = di depan meja (z=2), di belakang PC (z=4). */
+.worker {
+  position: absolute;
+  left: calc(var(--tile) * 0.05);        /* sisi kiri station */
+  top: calc(var(--tile) * 0.7);          /* head di atas tepi meja */
+  width: 72px;
+  height: 110px;                          /* extend ke bawah meja */
+  z-index: 3;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.6));
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom center;
+  image-rendering: pixelated;
+}
+
+/* 15 character variants — assigned via hash session_id */
+.worker.agent-0  { background-image: url('assets/agents/agent_0.png'); }
+.worker.agent-1  { background-image: url('assets/agents/agent_1.png'); }
+.worker.agent-2  { background-image: url('assets/agents/agent_2.png'); }
+.worker.agent-3  { background-image: url('assets/agents/agent_3.png'); }
+.worker.agent-4  { background-image: url('assets/agents/agent_4.png'); }
+.worker.agent-5  { background-image: url('assets/agents/agent_5.png'); }
+.worker.agent-6  { background-image: url('assets/agents/agent_6.png'); }
+.worker.agent-7  { background-image: url('assets/agents/agent_7.png'); }
+.worker.agent-8  { background-image: url('assets/agents/agent_8.png'); }
+.worker.agent-9  { background-image: url('assets/agents/agent_9.png'); }
+.worker.agent-10 { background-image: url('assets/agents/agent_10.png'); }
+.worker.agent-11 { background-image: url('assets/agents/agent_11.png'); }
+.worker.agent-12 { background-image: url('assets/agents/agent_12.png'); }
+.worker.agent-13 { background-image: url('assets/agents/agent_13.png'); }
+.worker.agent-14 { background-image: url('assets/agents/agent_14.png'); }
+
+.expression-icon {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  font-size: 26px;
+  z-index: 6;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.5));
+}
+
+/* 3 expressions */
+.station.expression-sleeping .worker {
+  filter: contrast(1.0) saturate(0.25) brightness(0.55)
+          drop-shadow(1px 2px 0 rgba(0,0,0,0.5));
+  animation: zzz 3s ease-in-out infinite;
+}
+.station.expression-sleeping .expression-icon {
+  animation: zzz-bubble 2s steps(4) infinite;
+}
+.station.expression-sleeping { opacity: 0.85; }
+
+.station.expression-awake .worker {
+  animation: wiggle 0.5s steps(4) infinite;
+}
+.station.expression-awake .expression-icon {
+  animation: bob 1.5s steps(4) infinite;
+}
+
+.station.expression-hard .worker {
+  filter: contrast(1.4) saturate(1.8) brightness(1.15)
+          drop-shadow(1px 2px 0 rgba(0,0,0,0.6));
+  animation: hard-shake 0.18s steps(4) infinite;
+}
+.station.expression-hard .expression-icon {
+  animation: muscle-flex 0.5s steps(4) infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: translateX(-2px) rotate(-2deg); }
+  50%      { transform: translateX(2px) rotate(2deg); }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+@keyframes zzz {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(1px) scale(0.96); }
+}
+@keyframes zzz-bubble {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  50%  { opacity: 1; transform: translateY(-4px) scale(1); }
+  100% { opacity: 0; transform: translateY(-10px) scale(1.1); }
+}
+@keyframes hard-shake {
+  0%   { transform: translate(-3px, 1px) rotate(-4deg); }
+  25%  { transform: translate(3px, -2px) rotate(4deg); }
+  50%  { transform: translate(-2px, 1px) rotate(-2deg); }
+  75%  { transform: translate(2px, -2px) rotate(3deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes muscle-flex {
+  0%, 100% { transform: scale(1) rotate(-8deg); }
+  50%      { transform: scale(1.4) rotate(8deg); }
+}
+
+/* Spawn glow */
+.station.spawn-glow .desk-front {
+  filter: drop-shadow(0 0 12px var(--yellow));
+  animation: spawn-pulse 0.6s steps(4) infinite;
+}
+@keyframes spawn-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--yellow)); }
+  50%      { filter: drop-shadow(0 0 20px var(--yellow)) brightness(1.3); }
+}
+
+/* === SUB-AGENT — sprite hewan asli (sub_X.png), sama index dengan parent === */
+.sub-roamer {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  z-index: 7;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom center;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.6));
+  /* TIDAK ada transition — gerakan kaku grid-to-grid (instant snap) */
+  pointer-events: auto;
+}
+.sub-roamer.sub-0  { background-image: url('assets/subagents/sub_0.png'); }
+.sub-roamer.sub-1  { background-image: url('assets/subagents/sub_1.png'); }
+.sub-roamer.sub-2  { background-image: url('assets/subagents/sub_2.png'); }
+.sub-roamer.sub-3  { background-image: url('assets/subagents/sub_3.png'); }
+.sub-roamer.sub-4  { background-image: url('assets/subagents/sub_4.png'); }
+.sub-roamer.sub-5  { background-image: url('assets/subagents/sub_5.png'); }
+.sub-roamer.sub-6  { background-image: url('assets/subagents/sub_6.png'); }
+.sub-roamer.sub-7  { background-image: url('assets/subagents/sub_7.png'); }
+.sub-roamer.sub-8  { background-image: url('assets/subagents/sub_8.png'); }
+.sub-roamer.sub-9  { background-image: url('assets/subagents/sub_9.png'); }
+.sub-roamer.sub-10 { background-image: url('assets/subagents/sub_10.png'); }
+.sub-roamer.sub-11 { background-image: url('assets/subagents/sub_11.png'); }
+.sub-roamer.sub-12 { background-image: url('assets/subagents/sub_12.png'); }
+.sub-roamer.sub-13 { background-image: url('assets/subagents/sub_13.png'); }
+.sub-roamer.sub-14 { background-image: url('assets/subagents/sub_14.png'); }
+
+/* Aura warna per sub-agent type */
+.sub-roamer[data-type="Explore"]           { filter: drop-shadow(0 0 6px #6cc2f5) drop-shadow(2px 3px 0 rgba(0,0,0,0.6)); }
+.sub-roamer[data-type="general-purpose"]   { filter: drop-shadow(0 0 6px #ffb84a) drop-shadow(2px 3px 0 rgba(0,0,0,0.6)); }
+.sub-roamer[data-type="Plan"]              { filter: drop-shadow(0 0 6px #9c6ade) drop-shadow(2px 3px 0 rgba(0,0,0,0.6)); }
+.sub-roamer[data-type="claude-code-guide"] { filter: drop-shadow(0 0 6px #6dde6d) drop-shadow(2px 3px 0 rgba(0,0,0,0.6)); }
+.sub-roamer[data-type="code-reviewer"]     { filter: drop-shadow(0 0 6px #ff7ec8) drop-shadow(2px 3px 0 rgba(0,0,0,0.6)); }
+
+/* (Orbit/wander animations removed — sub-roamer pakai grid-by-grid step
+   via setInterval di app.js, dengan CSS transition untuk smoothness) */
+
+/* Sub-roamer badge on parent desk */
+.sub-badge {
+  position: absolute;
+  top: var(--tile);
+  right: 0;
+  background: var(--orange);
+  color: #1a1530;
+  font-size: 8px;
+  padding: 2px 4px;
+  z-index: 8;
+  border: 1px solid #5a3a1a;
+  font-weight: bold;
+}
+
+/* Cell label — di bawah worker (worker bottom ~ row 3.0 dgn height 110px) */
+.cell-label {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--tile) * 4.2);      /* di bawah worker, di luar station */
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: #1a1530;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px 5px;
+  border: 1px solid #4a3a6d;
+  white-space: nowrap;
+  z-index: 7;
+  pointer-events: none;
+}
+.station.expression-sleeping .cell-label { opacity: 0.55; }
+
+/* Tooltip */
+.station:hover { z-index: 100; }
+.station:hover .tooltip { display: block; }
+.tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: -90px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.94);
+  border: 2px solid var(--orange);
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 7px;
+  width: 220px;
+  z-index: 999;
+  line-height: 1.4;
+  text-align: left;
+}
+.tooltip b { color: var(--yellow); }
+
+.botbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 20px;
+  background: rgba(20, 14, 45, 0.85);
+  border-top: 4px solid #5a3e8c;
+  font-size: 8px;
+  color: var(--text-dim);
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+.botbar b { color: var(--green); }
+.legend-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.legend-group.sub { color: var(--pink); }
+.dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 2px;
+  vertical-align: middle;
+}
+.dot-hard  { background: #ff6464; box-shadow: 0 0 4px #ff6464; }
+.dot-awake { background: #f5d76e; box-shadow: 0 0 4px #f5d76e; }
+.dot-sleep { background: #7a7a8a; opacity: 0.75; }
+
+/* === STATION FLIPPED (chair di atas, untuk pair vertikal face-to-face) === */
+.station.flipped .pc {
+  top: calc(var(--tile) * 2);        /* PC di bawah */
+}
+.station.flipped .desk-front {
+  top: var(--tile);                  /* desk tetap di tengah */
+}
+.station.flipped .chair {
+  top: calc(var(--tile) * -1);       /* chair di atas desk */
+}
+.station.flipped .worker {
+  top: calc(var(--tile) * -0.3);     /* worker duduk di chair (atas) */
+}
+.station.flipped .sub-badge { top: calc(var(--tile) * 2); }
+.station.flipped .cell-label {
+  top: calc(var(--tile) * 1.4);      /* worker flipped ada di sekitar row 0.7-1.4 */
+}
+
+/* === DISPENSER air === */
+.dispenser {
+  position: absolute;
+  z-index: 3;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.35));
+}
+
+/* === LAPANGAN TENIS — hijau besar di kanan-bawah WORK === */
+.tennis {
+  position: absolute;
+  z-index: 3;
+  /* Subtle bobbing supaya kerasa hidup tapi tidak distract */
+  animation: court-pulse 5s ease-in-out infinite;
+}
+@keyframes court-pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.04); }
+}
+
+/* === TV LOG — 2× lebih besar, pojok kanan-atas LOUNGE === */
+.tv {
+  position: absolute;
+  top: calc(var(--tile) * 0.4);
+  right: calc(var(--tile) * 0.4);
+  width: calc(var(--tile) * 8);       /* 384px (was 192) */
+  height: calc(var(--tile) * 5);       /* 240px (was 125) */
+  z-index: 6;
+}
+.tv-screen {
+  font-size: 11px;                     /* lebih besar supaya kebaca */
+  line-height: 1.5;
+  padding: 10px 12px;
+}
+.tv-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #1a1530;
+  border: 6px solid #0d0820;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 0 2px #4a3a6d,
+    4px 6px 0 rgba(0,0,0,0.4);
+}
+.tv-screen {
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 14px;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(50, 80, 50, 0.4) 0%,
+      rgba(20, 40, 20, 0.6) 60%,
+      rgba(0, 10, 0, 0.8) 100%),
+    #0a1a0a;
+  border: 2px solid #2a4a2a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #adff8b;
+  padding: 6px 8px;
+  overflow: hidden;
+  line-height: 1.5;
+  text-shadow: 0 0 4px #6dde6d;
+  /* Scanline effect dalam TV */
+  background-image: repeating-linear-gradient(0deg,
+    transparent 0 2px,
+    rgba(0,0,0,0.25) 2px 3px);
+}
+.tv-stand {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 8px;
+  background: #0d0820;
+  border-radius: 0 0 4px 4px;
+}
+.tv-screen .log-line {
+  display: grid;
+  grid-template-columns: 38px 90px 1fr;
+  gap: 8px;
+  padding: 1px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: 'Press Start 2P', monospace;
+}
+.tv-screen .log-line span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Column header row */
+.tv-screen .log-cols {
+  display: grid;
+  grid-template-columns: 38px 90px 1fr;
+  gap: 8px;
+  font-size: 9px;
+  color: #ffb84a;
+  border-bottom: 1px dashed #2a4a2a;
+  padding: 2px 2px 4px;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* === Warna SEMANTIK per ekspresi agent === */
+/* Sibuk (hard) — MERAH */
+.tv-screen .log-line.log-hard {
+  color: #ff6464;                                /* base text red */
+  text-shadow: 0 0 6px rgba(255, 100, 100, 0.6);
+}
+.tv-screen .log-line.log-hard .log-time { color: #ffaaaa; }
+.tv-screen .log-line.log-hard .log-proj { color: #ff9080; }
+.tv-screen .log-line.log-hard .log-tool { color: #ff6464; font-weight: bold; }
+
+/* Awake — KUNING */
+.tv-screen .log-line.log-awake {
+  color: #f5d76e;
+  text-shadow: 0 0 5px rgba(245, 215, 110, 0.5);
+}
+.tv-screen .log-line.log-awake .log-time { color: #fff0a0; }
+.tv-screen .log-line.log-awake .log-proj { color: #ffb84a; }
+.tv-screen .log-line.log-awake .log-tool { color: #f5d76e; }
+
+/* Sleeping — ABU-ABU */
+.tv-screen .log-line.log-sleeping {
+  color: #7a7a8a;
+  text-shadow: none;
+  opacity: 0.75;
+}
+.tv-screen .log-line.log-sleeping .log-time { color: #9a9aaa; }
+.tv-screen .log-line.log-sleeping .log-proj { color: #8a8a9a; }
+.tv-screen .log-line.log-sleeping .log-tool { color: #6a6a7a; }
+.tv-screen .log-line.log-sleeping .log-anim { filter: saturate(0.3); }
+
+/* Header */
+.tv-screen .log-header {
+  color: #f5d76e;
+  font-size: 11px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #2a4a2a;
+  padding-bottom: 5px;
+}
+/* Flicker animasi screen */
+.tv-screen { animation: tv-flicker 0.4s steps(2) infinite; }
+@keyframes tv-flicker {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.94; }
+}
+
+/* Zone labels */
+.zone-label {
+  position: absolute;
+  bottom: 4px;
+  font-size: 9px;
+  color: rgba(0,0,0,0.4);
+  letter-spacing: 2px;
+  z-index: 1;
+  pointer-events: none;
+}
+.zone-work .zone-label { right: 12px; }
+.zone-lounge .zone-label { left: 12px; }
+
+@media (max-width: 1500px) {
+  .room-inner { transform: scale(0.78); transform-origin: top center; margin-bottom: -200px; }
+}
+@media (max-width: 1100px) {
+  .room-inner { transform: scale(0.5); transform-origin: top center; margin-bottom: -380px; }
+}

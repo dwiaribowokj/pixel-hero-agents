@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🦊 Pixel Hero Agents — Claude Code session visualizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="scanline"></div>
+
+  <header class="topbar">
+    <div class="title-box">
+      <span class="pixel-icon">🦊</span>
+      <div>
+        <h1>PIXEL HERO AGENTS</h1>
+        <div class="by-line">by <a href="https://github.com/rdwnilyas" target="_blank" rel="noopener">@rdwnilyas</a></div>
+      </div>
+    </div>
+    <div class="stats" id="stats">
+      <span class="stat"><b id="n-total">—</b> desks</span>
+      <span class="stat active"><b id="n-active">—</b> working</span>
+      <span class="stat recent"><b id="n-recent">—</b> recent</span>
+      <span class="stat"><span class="last-update" id="last-update">—</span></span>
+    </div>
+  </header>
+
+  <main class="room">
+    <div class="room-inner">
+      <div class="zone-work" id="zone-work">
+        <span class="zone-label">WORK</span>
+      </div>
+      <div class="zone-lounge" id="zone-lounge">
+        <span class="zone-label">LOUNGE</span>
+        <div class="tv" id="tv">
+          <div class="tv-frame">
+            <div class="tv-screen" id="tv-screen"></div>
+            <div class="tv-stand"></div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="desks" id="desks"></div>
+    </div>
+  </main>
+
+  <footer class="botbar">
+    <div class="legend-group">
+      <span class="dot dot-hard"></span><span>sibuk (sub-agent jalan)</span>
+      <span class="dot dot-awake"></span><span>aktif sendiri</span>
+      <span class="dot dot-sleep"></span><span>tidur (idle &gt; 5 menit)</span>
+    </div>
+    <div class="legend-group">
+      <span>refresh tiap <b id="refresh-ctr">2</b>s</span>
+      <span>•</span>
+      <span>karakter agent = hash session_id × 15 pool</span>
+      <span>•</span>
+      <span>sub-agent hewan = parent agent yang sama</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

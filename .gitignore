@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Runtime artifacts
+sessions_*.json
+capture_*.png
+*.log
+
+# Build / dist
+build/
+dist/
+*.egg-info/
