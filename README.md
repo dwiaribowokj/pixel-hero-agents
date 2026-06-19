@@ -37,6 +37,62 @@ It's part status panel, part dollhouse. Mostly dollhouse.
 - **🧠 Stable assignment** — your hero, your desk, your slot. Re-renders don't shuffle anyone around. Pre-warmed cache means the first browser load is fast even with multi-megabyte JSONLs.
 - **📡 Live local network access** — bind 0.0.0.0; show it on your phone, tablet, or to your office plant.
 
+## 🦊 Meet the 15 Hero Agents
+
+Each Claude Code session gets a **unique** hero from this anthropomorphic crew. Same index = same hero, so your terminal always reincarnates as the same character.
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/agents/agent_0.png" width="110" alt="Fox"/><br/><b>00 — Fox</b></td>
+    <td align="center"><img src="assets/agents/agent_1.png" width="110" alt="Wolf"/><br/><b>01 — Wolf</b></td>
+    <td align="center"><img src="assets/agents/agent_2.png" width="110" alt="Cat"/><br/><b>02 — Cat</b></td>
+    <td align="center"><img src="assets/agents/agent_3.png" width="110" alt="Rabbit"/><br/><b>03 — Rabbit</b></td>
+    <td align="center"><img src="assets/agents/agent_4.png" width="110" alt="Bear"/><br/><b>04 — Bear</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/agents/agent_5.png" width="110" alt="Panda"/><br/><b>05 — Panda</b></td>
+    <td align="center"><img src="assets/agents/agent_6.png" width="110" alt="Otter"/><br/><b>06 — Otter</b></td>
+    <td align="center"><img src="assets/agents/agent_7.png" width="110" alt="Eagle"/><br/><b>07 — Eagle</b></td>
+    <td align="center"><img src="assets/agents/agent_8.png" width="110" alt="Mouse"/><br/><b>08 — Mouse</b></td>
+    <td align="center"><img src="assets/agents/agent_9.png" width="110" alt="Boar"/><br/><b>09 — Boar</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/agents/agent_10.png" width="110" alt="Squirrel"/><br/><b>10 — Squirrel</b></td>
+    <td align="center"><img src="assets/agents/agent_11.png" width="110" alt="Frog"/><br/><b>11 — Frog</b></td>
+    <td align="center"><img src="assets/agents/agent_12.png" width="110" alt="Shiba"/><br/><b>12 — Shiba</b></td>
+    <td align="center"><img src="assets/agents/agent_13.png" width="110" alt="Hedgehog"/><br/><b>13 — Hedgehog</b></td>
+    <td align="center"><img src="assets/agents/agent_14.png" width="110" alt="Deer"/><br/><b>14 — Deer</b></td>
+  </tr>
+</table>
+
+## 🐾 …and Their 15 Sub-agent Sidekicks
+
+When a session spawns an `Agent`, `Task`, or `Workflow` tool, a baby version of the parent's hero wanders the office floor — same species, smaller body, no work clothes.
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/subagents/sub_0.png" width="90" alt="Fox kit"/><br/><sub>00 — Fox</sub></td>
+    <td align="center"><img src="assets/subagents/sub_1.png" width="90" alt="Wolf pup"/><br/><sub>01 — Wolf</sub></td>
+    <td align="center"><img src="assets/subagents/sub_2.png" width="90" alt="Cat kitten"/><br/><sub>02 — Cat</sub></td>
+    <td align="center"><img src="assets/subagents/sub_3.png" width="90" alt="Rabbit kit"/><br/><sub>03 — Rabbit</sub></td>
+    <td align="center"><img src="assets/subagents/sub_4.png" width="90" alt="Bear cub"/><br/><sub>04 — Bear</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/subagents/sub_5.png" width="90" alt="Panda cub"/><br/><sub>05 — Panda</sub></td>
+    <td align="center"><img src="assets/subagents/sub_6.png" width="90" alt="Otter pup"/><br/><sub>06 — Otter</sub></td>
+    <td align="center"><img src="assets/subagents/sub_7.png" width="90" alt="Eagle chick"/><br/><sub>07 — Eagle</sub></td>
+    <td align="center"><img src="assets/subagents/sub_8.png" width="90" alt="Mouse pup"/><br/><sub>08 — Mouse</sub></td>
+    <td align="center"><img src="assets/subagents/sub_9.png" width="90" alt="Boar piglet"/><br/><sub>09 — Boar</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/subagents/sub_10.png" width="90" alt="Squirrel"/><br/><sub>10 — Squirrel</sub></td>
+    <td align="center"><img src="assets/subagents/sub_11.png" width="90" alt="Frog"/><br/><sub>11 — Frog</sub></td>
+    <td align="center"><img src="assets/subagents/sub_12.png" width="90" alt="Shiba pup"/><br/><sub>12 — Shiba</sub></td>
+    <td align="center"><img src="assets/subagents/sub_13.png" width="90" alt="Hedgehog"/><br/><sub>13 — Hedgehog</sub></td>
+    <td align="center"><img src="assets/subagents/sub_14.png" width="90" alt="Fawn"/><br/><sub>14 — Deer</sub></td>
+  </tr>
+</table>
+
 ## 📸 Screenshots
 
 > Drop your own here once you've run it locally — `python serve.py` then open `http://localhost:5555/`.
