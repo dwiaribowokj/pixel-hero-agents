@@ -74,6 +74,35 @@ html, body {
 .stat b { color: var(--text); margin-right: 4px; }
 .stat.active b { color: var(--green); }
 .stat.recent b { color: var(--yellow); }
+.active-window { display: inline-flex; align-items: center; gap: 5px; }
+.active-window button {
+  cursor: pointer;
+  color: var(--text-dim);
+  background: #1b1235;
+  border: 2px solid #5a3e8c;
+  padding: 3px 5px;
+  font-size: 7px;
+  box-shadow: inset -2px -2px 0 rgba(0,0,0,.35);
+  opacity: .72;
+}
+.active-window button:hover {
+  opacity: 1;
+  border-color: var(--orange);
+}
+.active-window button.selected {
+  color: #101a10;
+  background: var(--green);
+  border-color: var(--yellow);
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px rgba(245,215,110,.28),
+    0 0 10px rgba(109,222,109,.55),
+    inset -2px -2px 0 rgba(0,0,0,.28);
+}
+.active-window button.selected::before {
+  content: '▶';
+  margin-right: 3px;
+}
 
 /* === SHOWCASE STRIP (15 heroes + 15 sub-agents) === */
 .showcase {

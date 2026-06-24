@@ -200,11 +200,28 @@ function generateDemo(n) {
   };
 }
 
+function getActiveWindow() {
+  const v = Number(localStorage.getItem('activeWindowSeconds') || '120');
+  return [30, 60, 120].includes(v) ? v : 120;
+}
+
+function initActiveWindowToggle() {
+  document.querySelectorAll('.active-window button').forEach(btn => {
+    const v = Number(btn.dataset.window);
+    btn.classList.toggle('selected', v === getActiveWindow());
+    btn.addEventListener('click', () => {
+      localStorage.setItem('activeWindowSeconds', String(v));
+      document.querySelectorAll('.active-window button').forEach(b => b.classList.toggle('selected', b === btn));
+      tick();
+    });
+  });
+}
+
 async function fetchSessions() {
   const demoN = getDemoCount();
   if (demoN > 0) return generateDemo(demoN);
   try {
-    const r = await fetch('/api/sessions', { cache: 'no-store' });
+    const r = await fetch('/api/sessions?active_window=' + getActiveWindow(), { cache: 'no-store' });
     if (!r.ok) throw new Error('http ' + r.status);
     return await r.json();
   } catch (e) { console.error(e); return null; }
@@ -472,6 +489,7 @@ function render(data) {
 
   if (!staticRendered) {
     renderStaticOnce();
+    initActiveWindowToggle();
     staticRendered = true;
   }
 
