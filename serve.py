@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import http.server
 import json
+import re
 import socketserver
 import sys
 import time
@@ -22,6 +23,7 @@ HERE = Path(__file__).resolve().parent
 PROJECTS_DIR = Path.home() / ".claude" / "projects"
 OPENCLAW_AGENTS_DIR = Path.home() / ".openclaw" / "agents"
 PORT = 5555
+MAX_OPENCLAW_FILES = 240
 
 CHANNEL_LABELS = {
     "1475686954828828764": "#general",
@@ -59,6 +61,47 @@ ANIMALS = [
 ]
 
 
+
+
+def _clean_user_text_and_label(text: str, current_label: str) -> tuple[str, str]:
+    """Extract readable text + channel label from OpenClaw inbound system envelope."""
+    label = current_label
+    # Examples:
+    # System: [.. UTC] Teams DM from Dwi A: message | conversation:{...} | sender:{...}
+    m = re.search(r"Teams\s+(DM|Group|Channel)\s+from\s+([^:|]+):\s*(.*)", text, re.I | re.S)
+    if m:
+        kind = m.group(1).lower()
+        name = m.group(2).strip()
+        rest = m.group(3).strip()
+        if kind == "dm":
+            label = f"teams/dm:{name}"
+        elif kind == "group":
+            label = f"teams/group:{name}"
+        else:
+            label = f"teams/#{name}"
+        text = rest
+
+    # Discord/WhatsApp style injected envelope, e.g.
+    # [Discord #general channel id:... Wed ...] wieekun: message
+    m = re.match(r"\[(Discord|WhatsApp|Telegram|Signal|Slack)\s+([^\]]+)\]\s+([^:]+):\s*(.*)", text, re.S)
+    if m:
+        surface = m.group(1).lower()
+        target = m.group(2).strip()
+        sender = m.group(3).strip()
+        rest = m.group(4).strip()
+        if surface == "discord":
+            channel_name = target.split()[0]
+            label = f"discord/{channel_name}"
+        else:
+            label = f"{surface}/{target.split()[0]}"
+        text = f"{sender}: {rest}" if sender else rest
+
+    # Strip appended OpenClaw metadata blobs from readable chat preview.
+    for marker in (" | conversation:", " | sender:"):
+        idx = text.find(marker)
+        if idx >= 0:
+            text = text[:idx].rstrip()
+    return text, label
 
 def _label_from_session_key(session_key: str, agent_name: str) -> str:
     """Turn OpenClaw sessionKey into a compact dashboard label."""
@@ -124,7 +167,7 @@ def _status(age_seconds: float, active_seconds: int = 120) -> str:
 
 
 _SCAN_CACHE_BY_WINDOW: dict[int, dict] = {}
-_SCAN_TTL = 10.0   # cache 10 detik. Scan butuh 20-30s untuk session besar
+_SCAN_TTL = 0.0    # no API cache; frontend polling should reflect latest session log
 import threading
 _SCAN_LOCK = threading.Lock()
 
@@ -159,6 +202,7 @@ def scan_sessions(active_seconds: int = 120) -> dict:
                 "sessions": [], "error": f"No Claude/OpenClaw sessions found: {PROJECTS_DIR} / {OPENCLAW_AGENTS_DIR}"}
 
     if OPENCLAW_AGENTS_DIR.exists():
+        openclaw_files = []
         for agent_dir in OPENCLAW_AGENTS_DIR.iterdir():
             sess_dir = agent_dir / "sessions"
             if not sess_dir.is_dir():
@@ -170,6 +214,9 @@ def scan_sessions(active_seconds: int = 120) -> dict:
                     stat = jsonl.stat()
                 except Exception:
                     continue
+                openclaw_files.append((stat.st_mtime, agent_dir, jsonl, stat))
+        openclaw_files.sort(key=lambda x: x[0], reverse=True)
+        for _, agent_dir, jsonl, stat in openclaw_files[:MAX_OPENCLAW_FILES]:
                 mtime = stat.st_mtime
                 age = max(0.0, now - mtime)
                 size_kb = stat.st_size // 1024
@@ -181,6 +228,7 @@ def scan_sessions(active_seconds: int = 120) -> dict:
                 last_tool = ""
                 model = ""
                 session_key = _session_key_from_trajectory(jsonl)
+                session_label = _label_from_session_key(session_key, agent_dir.name)
                 try:
                     with open(jsonl, encoding="utf-8") as fp:
                         for line in fp:
@@ -210,6 +258,7 @@ def scan_sessions(active_seconds: int = 120) -> dict:
                                             user_text = x.get("text") or ""
                                             break
                                 if user_text:
+                                    user_text, session_label = _clean_user_text_and_label(user_text, session_label)
                                     if not first_user:
                                         first_user = user_text[:80]
                                     last_user = user_text[:120]
@@ -237,7 +286,7 @@ def scan_sessions(active_seconds: int = 120) -> dict:
                 out_sessions.append({
                     "id": sid + ("-trace" if is_trace else ""),
                     "short_id": sid[:8],
-                    "project": _label_from_session_key(session_key, agent_dir.name) + ("/trace" if is_trace else ""),
+                    "project": session_label + ("/trace" if is_trace else ""),
                     "n_messages": n_messages,
                     "n_tools": n_tools,
                     "n_subagents": 0,
@@ -451,6 +500,7 @@ def scan_sessions(active_seconds: int = 120) -> dict:
         "n_recent": sum(1 for s in out_sessions if s["status"] == "recent"),
         "active_window_seconds": active_seconds,
         "sessions": out_sessions,
+        "scanned_limit": MAX_OPENCLAW_FILES if OPENCLAW_AGENTS_DIR.exists() else None,
     }
     _SCAN_CACHE_BY_WINDOW[active_seconds] = {"ts": now, "data": result}
     try:
