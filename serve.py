@@ -68,18 +68,21 @@ def _clean_user_text_and_label(text: str, current_label: str) -> tuple[str, str]
     label = current_label
     # Examples:
     # System: [.. UTC] Teams DM from Dwi A: message | conversation:{...} | sender:{...}
-    m = re.search(r"Teams\s+(DM|Group|Channel)\s+from\s+([^:|]+):\s*(.*)", text, re.I | re.S)
-    if m:
-        kind = m.group(1).lower()
-        name = m.group(2).strip()
-        rest = m.group(3).strip()
-        if kind == "dm":
-            label = f"teams/dm:{name}"
-        elif kind == "group":
-            label = f"teams/group:{name}"
-        else:
-            label = f"teams/#{name}"
-        text = rest
+    # Important: only classify Teams when the OpenClaw envelope itself starts with System:.
+    # Do not relabel Discord sessions just because a pasted file/chat contains "Teams DM from ...".
+    if text.startswith("System:"):
+        m = re.search(r"^System:\s*\[[^\]]+\]\s+Teams\s+(DM|Group|Channel)\s+from\s+([^:|]+):\s*(.*)", text, re.I | re.S)
+        if m:
+            kind = m.group(1).lower()
+            name = m.group(2).strip()
+            rest = m.group(3).strip()
+            if kind == "dm":
+                label = f"teams/dm:{name}"
+            elif kind == "group":
+                label = f"teams/group:{name}"
+            else:
+                label = f"teams/#{name}"
+            text = rest
 
     # Discord/WhatsApp style injected envelope, e.g.
     # [Discord #general channel id:... Wed ...] wieekun: message
