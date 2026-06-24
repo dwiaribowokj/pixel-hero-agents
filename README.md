@@ -9,7 +9,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776ab?logo=python&logoColor=white)](https://www.python.org/)
 [![No dependencies](https://img.shields.io/badge/server-stdlib%20only-success)](serve.py)
-[![Made by](https://img.shields.io/badge/made%20by-%40rdwnilyas%20on%20IG-E1306C?logo=instagram&logoColor=white)](https://instagram.com/rdwnilyas)
+[![Modified by](https://img.shields.io/badge/modified%20by-%40dwiaribowokj-181717?logo=github&logoColor=white)](https://github.com/dwiaribowokj)
+
+Original by [@rdwnilyas](https://instagram.com/rdwnilyas). Modified by [@dwiaribowokj](https://github.com/dwiaribowokj).
 
 </div>
 
@@ -107,7 +109,7 @@ When a session spawns an `Agent`, `Task`, or `Workflow` tool, a baby version of 
 ### Run
 
 ```bash
-git clone https://instagram.com/rdwnilyas/pixel-hero-agents.git
+git clone https://github.com/dwiaribowokj/pixel-hero-agents.git
 cd pixel-hero-agents
 python serve.py
 ```
@@ -206,6 +208,6 @@ MIT — see [LICENSE](LICENSE). All assets shipped in this repo are MIT-compatib
 
 <div align="center">
 
-Made with 🦊🐺🐱🐰🐻🐼🦦🦅🐭🐗🐿️🐸🐕🦔🦌 by <a href="https://instagram.com/rdwnilyas">@rdwnilyas</a>
+Modified with 🦊🐺🐱🐰🐻🐼🦦🦅🐭🐗🐿️🐸🐕🦔🦌 by <a href="https://github.com/dwiaribowokj">@dwiaribowokj</a>
 
 </div>
