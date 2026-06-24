@@ -520,12 +520,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(HERE), **kwargs)
 
     def log_message(self, fmt, *args):
-        # Suppress per-request log noise
-        if "/api/" in args[0] if args else False:
+        # Suppress per-request API log noise. args[0] can be HTTPStatus for errors.
+        first = str(args[0]) if args else ""
+        if "/api/" in first:
             return
-        sys.stderr.write(f"  {fmt % args}\n")
+        try:
+            sys.stderr.write(f"  {fmt % args}\n")
+        except Exception:
+            sys.stderr.write(f"  {fmt} {args}\n")
 
     def do_GET(self):
+        if self.path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
         if self.path.startswith("/api/sessions"):
             try:
                 qs = parse_qs(urlparse(self.path).query)
