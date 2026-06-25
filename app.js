@@ -957,8 +957,8 @@ function updateTVLog(sessions) {
 
   const lines = visible.map(l => {
     const t = ageLabel(l.age).padStart(4, ' ');
-    const proj = l.proj.slice(0, 10).padEnd(10, ' ');
-    const tool = l.tool.slice(0, 12);
+    const proj = l.proj.slice(0, 20);
+    const tool = l.tool.slice(0, 10);
     return `<div class="log-line log-${l.expr}"><span class="log-time">${t}</span><span class="log-proj">${escapeHtml(proj)}</span><span class="log-tool">${escapeHtml(tool)}</span></div>`;
   }).join('');
 

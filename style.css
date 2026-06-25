@@ -885,7 +885,7 @@ html, body {
 }
 .tv-screen .log-line {
   display: grid;
-  grid-template-columns: 38px 90px 1fr;
+  grid-template-columns: 38px minmax(160px, 1fr) 48px;
   gap: 8px;
   padding: 1px 2px;
   white-space: nowrap;
@@ -899,7 +899,7 @@ html, body {
 /* Column header row */
 .tv-screen .log-cols {
   display: grid;
-  grid-template-columns: 38px 90px 1fr;
+  grid-template-columns: 38px minmax(160px, 1fr) 48px;
   gap: 8px;
   font-size: 9px;
   color: #ffb84a;
